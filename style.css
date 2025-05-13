@@ -8,6 +8,7 @@ body {
     flex-direction: column;
     align-items: center;
     text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
 }
 
 #title {
@@ -46,22 +47,30 @@ body {
     background-color: #00000050;
 }
 
+#reference, a {
+    color: #FFC4A8;
+}
+
+a:visited, a:active, a:hover {
+    color: inherit;
+}
+
 .cell {
     background-color: #fff;
 }
 
-.cell.captured {
+.cell.conquered {
     background-color: #FFC4A8;
 }
 
 .cell.trail {
-    background-color: #FF84B7;
+    background-color: #ffadcf;
 }
 
 .cell.player {
     background-color: #ff006a;
 }
 
-.cell.enemy {
+.cell.obstacle {
     background-color: #000;
 }
