@@ -5,53 +5,68 @@ const court = document.getElementById("court");
 let playerX = 0;
 let playerY = 0;
 let direction = { x: 1, y: 0 };
+let trailActive = false;
+
+let field = [];
+
+for (let y = 0; y < rows; y++) {
+    field[y] = [];
+    for (let x = 0; x < cols; x++) {
+        field[y][x] = "empty";
+    }
+}
 
 for (let y = 0; y < rows; y++) {
     for (let x = 0; x < cols; x++) {
         const cell = document.createElement("div");
         cell.classList.add("cell");
         if (x < 3 || x >= cols - 3 || y < 3 || y >= rows - 3) {
-            cell.classList.add("captured");
+            cell.classList.add("conquered");
         }
-        cell.dataset.x = x;
-        cell.dataset.y = y;
+        cell.setAttribute('pos-x', x);
+        cell.setAttribute('pos-y', y);
         court.appendChild(cell);
     }
 }
 
 function getCell(x, y) {
-    return document.querySelector(`.cell[data-x='${x}'][data-y='${y}']`);
+    return document.querySelector(`.cell[pos-x="${x}"][pos-y="${y}"]`);
 }
 
 function drawPlayer() {
     document.querySelectorAll(".cell.player").forEach(cell => cell.classList.remove("player"));
     getCell(playerX, playerY).classList.add("player");
+
+    if(!(getCell(playerX, playerY).classList.contains("conquered"))){
+        getCell(playerX, playerY).classList.add("trail");
+        trailActive = true;
+    }
+
+    if(trailActive === true && getCell(playerX, playerY).classList.contains("conquered")){
+        trailActive = false;
+
+    }
 }
 
 drawPlayer();
 
 document.addEventListener("keydown", (e) => {
-    switch (e.key) {
-        case "ArrowUp":
-        case "w":
-        case "W":
-            direction = { x: 0, y: -1 };
-            break;
-        case "ArrowDown":
-        case "s":
-        case "S":
-            direction = { x: 0, y: 1 };
-            break;
-        case "ArrowLeft":
-        case "a":
-        case "A":
-            direction = { x: -1, y: 0 };
-            break;
-        case "ArrowRight":
-        case "d":
-        case "D":
-            direction = { x: 1, y: 0 };
-            break;
+    const key = e.key.toLowerCase();
+
+    if (key === "arrowup" || key === "w") {
+        direction = { x: 0, y: -1 };
+    }
+
+    if (key === "arrowdown" || key === "s") {
+        direction = { x: 0, y: 1 };
+    }
+
+    if (key === "arrowleft" || key === "a") {
+        direction = { x: -1, y: 0 };
+    }
+
+    if (key === "arrowright" || key === "d") {
+        direction = { x: 1, y: 0 };
     }
 });
 
