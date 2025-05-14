@@ -2,14 +2,13 @@ const rows = 30;
 const cols = 40;
 const court = document.getElementById("court");
 
-let playerX = 0;
-let playerY = 0;
+let playerPos = {x: 0, y: 0};
+let lastPos = {x: 0, y: 0};
 let direction = {x: 1, y: 0};
 let trailActive = false;
 let livesLeft = 3;
-let lastPos = {x: 0, y: 0};
 
-for (let y = 0; y < rows; y++) {
+for (let y = 0; y < rows; y++){
     for (let x = 0; x < cols; x++) {
         const cell = document.createElement("div");
         cell.classList.add("cell");
@@ -22,27 +21,28 @@ for (let y = 0; y < rows; y++) {
     }
 }
 
-function getCell(x, y) {
+function getCell(x, y){
     return document.querySelector(`.cell[pos-x="${x}"][pos-y="${y}"]`);
 }
 
-function drawPlayer() {
+function drawPlayer(){
     document.querySelectorAll(".cell.player").forEach(cell => cell.classList.remove("player"));
-    getCell(playerX, playerY).classList.add("player");
+    getCell(playerPos.x, playerPos.y).classList.add("player");
 
-    if(!(getCell(playerX, playerY).classList.contains("conquered"))){
-        getCell(playerX, playerY).classList.add("trail");
+    if(!(getCell(playerPos.x, playerPos.y).classList.contains("conquered"))){
+        
         trailActive = true;
     }
 
-    if(trailActive === true && getCell(playerX, playerY).classList.contains("conquered")){
+    if(trailActive === true && getCell(playerPos.x, playerPos.y).classList.contains("conquered")){
+        getCell(lastPos.x, lastPos.y).classList.add("trail");
         trailActive = false;
         //...
     }
 
-    /* if(trailActive === true && getCell(playerX, playerY).classList.contains("trail")){
+    if(trailActive === true && getCell(playerPos.x, playerPos.y).classList.contains("trail")){
         respawn(true);
-    } */
+    }
 }
 
 drawPlayer();
@@ -50,39 +50,55 @@ drawPlayer();
 document.addEventListener("keydown", (e) => {
     const key = e.key.toLowerCase();
 
-    if (key === "arrowup" || key === "w") {
+    if (key === "arrowup" || key === "w"){
         direction = { x: 0, y: -1 };
     }
 
-    if (key === "arrowdown" || key === "s") {
+    if (key === "arrowdown" || key === "s"){
         direction = { x: 0, y: 1 };
     }
 
-    if (key === "arrowleft" || key === "a") {
+    if (key === "arrowleft" || key === "a"){
         direction = { x: -1, y: 0 };
     }
 
-    if (key === "arrowright" || key === "d") {
+    if (key === "arrowright" || key === "d"){
         direction = { x: 1, y: 0 };
     }
 
-    if (key === "r") {
+    if (key === "r"){
         reset();
     }
 });
 
 setInterval(() => {
-    const newX = playerX + direction.x;
-    const newY = playerY + direction.y;
+    lastPos.x = playerPos.x;
+    lastPos.y = playerPos.y;
 
-    if (newX >= 0 && newX < cols && newY >= 0 && newY < rows) {
-        playerX = newX;
-        playerY = newY;
+    const tempX = playerPos.x + direction.x;
+    const tempY = playerPos.y + direction.y;
+
+    if (tempX >= 0 && tempX < cols && tempY >= 0 && tempY < rows){
+        playerPos.x = tempX;
+        playerPos.y = tempY;
         drawPlayer();
     }
 }, 50);
 
 function reset(){
+    livesLeft = 3;
+
+    for (let y = 0; y < rows; y++){
+        for (let x = 0; x < cols; x++) {
+            const cell = document.createElement("div");
+            cell.classList.add("cell");
+            if (!(x < 3 || x >= cols - 3 || y < 3 || y >= rows - 3)){
+                cell.classList.add("conquered");
+            } else {
+                
+            }
+        }
+    }
     //...
 }
 
@@ -95,6 +111,6 @@ function respawn(gotDamage){
         reset();
     }
 
-    playerX = 0;
-    playerY = 0;
+    playerPos.x = 0;
+    playerPos.y = 0;
 }
