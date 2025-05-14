@@ -1,5 +1,6 @@
 const rows = 30;
 const cols = 40;
+const totalAmount = rows * cols;
 const court = document.getElementById("court");
 
 var playerPos = {x: 0, y: 0};
@@ -7,8 +8,8 @@ var lastPos = {x: 0, y: 0};
 var direction = {x: 1, y: 0};
 var trailActive = false;
 var livesLeft = 3;
-var tickRate = 50;
 var paused = false;
+var completed = 0;
 
 for(var y = 0; y < rows; y++){
     for(var x = 0; x < cols; x++){
@@ -34,6 +35,10 @@ function drawPlayer(){
     }
 
     getCell(playerPos.x, playerPos.y).classList.add("player");
+
+    if(completed >= 75){
+        win();
+    }
 
     if(!getCell(playerPos.x, playerPos.y).classList.contains("conquered")){
         if (!getCell(lastPos.x, lastPos.y).classList.contains("conquered")){
@@ -82,13 +87,7 @@ document.addEventListener("keydown", function(e){
     }
 
     if(key === "p"){
-        if(!paused){
-            tickRate = 0;
-            paused = true;
-        }else{
-            tickRate = 50;
-            paused = false;
-        }
+        paused = !paused;
     }
 });
 
@@ -108,7 +107,7 @@ function gameTick(){
     }
 }
 
-setInterval(gameTick, tickRate);
+setInterval(gameTick, 50);
 
 function reset(){
     livesLeft = 3;
