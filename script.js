@@ -88,6 +88,12 @@ document.addEventListener("keydown", function(e){
 
     if(key === "p"){
         paused = !paused;
+        
+        if (paused === true) {
+            showOverlay("SPIEL PAUSIERT", "'P' drücken, um fortzufahren");
+        } else {
+            hideOverlay();
+        }
     }
 });
 
@@ -110,6 +116,8 @@ function gameTick(){
 setInterval(gameTick, 50);
 
 function reset(){
+    hideOverlay();
+    paused = false;
     livesLeft = 3;
     trailActive = false;
     playerPos.x = 0;
@@ -140,6 +148,7 @@ function reset(){
 }
 
 function respawn(){
+    paused = false;
     trailActive = false;
     livesLeft--;
     document.getElementById("lives").innerHTML = livesLeft;
@@ -169,7 +178,27 @@ function respawn(){
         }
 
         if (livesLeft === 0){
+            setTimeout(() => {
+                showOverlay("GAME OVER", "'R' drücken, um neuzustarten");
+                paused = true;
+            }, 0);
             reset();
         }
     }, 1000);
+}
+
+function showOverlay(message, subMessage) {
+    let overlay = document.getElementById("overlay");
+    overlay.classList.remove("hidden");
+    overlay.style.display = "flex";
+    document.getElementById("overlay-text").innerText = message;
+    document.getElementById("overlay-subtext").innerText = subMessage;
+    document.getElementById("court").classList.add("blurred");
+}
+
+function hideOverlay() {
+    let overlay = document.getElementById("overlay");
+    overlay.style.display = "none";
+    overlay.classList.add("hidden");
+    document.getElementById("court").classList.remove("blurred");
 }
