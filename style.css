@@ -36,6 +36,7 @@ body {
     padding: 2px;
     border: 10px solid white;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    background-color: #00000050;
 }
 
 #court {
@@ -44,10 +45,24 @@ body {
     grid-template-rows: repeat(30, 20px);
     gap: 2px;
     margin: 0;
-    background-color: #00000050;
 }
 
 #reference, a {
+    color: #FFC4A8;
+}
+
+#stats {
+    margin-left: 20px;
+    padding: 0 20px;
+    border: 10px solid white;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    font-size: 1.2em;
+    background-color: #00000025;
+    width: fit-content;
+}
+
+#stats-header{
+    text-decoration: underline;
     color: #FFC4A8;
 }
 
