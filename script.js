@@ -2,17 +2,19 @@ const rows = 30;
 const cols = 40;
 const court = document.getElementById("court");
 
-let playerPos = {x: 0, y: 0};
-let lastPos = {x: 0, y: 0};
-let direction = {x: 1, y: 0};
-let trailActive = false;
-let livesLeft = 3;
+var playerPos = {x: 0, y: 0};
+var lastPos = {x: 0, y: 0};
+var direction = {x: 1, y: 0};
+var trailActive = false;
+var livesLeft = 3;
+var tickRate = 50;
+var paused = false;
 
-for (let y = 0; y < rows; y++){
-    for (let x = 0; x < cols; x++) {
-        const cell = document.createElement("div");
+for(var y = 0; y < rows; y++){
+    for(var x = 0; x < cols; x++) {
+        var cell = document.createElement("div");
         cell.classList.add("cell");
-        if (x < 3 || x >= cols - 3 || y < 3 || y >= rows - 3) {
+        if(x < 3 || x >= cols - 3 || y < 3 || y >= rows - 3){
             cell.classList.add("conquered");
         }
         cell.setAttribute('pos-x', x);
@@ -22,95 +24,110 @@ for (let y = 0; y < rows; y++){
 }
 
 function getCell(x, y){
-    return document.querySelector(`.cell[pos-x="${x}"][pos-y="${y}"]`);
+    return document.querySelector('.cell[pos-x="' + x + '"][pos-y="' + y + '"]');
 }
 
 function drawPlayer(){
-    document.querySelectorAll(".cell.player").forEach(cell => cell.classList.remove("player"));
+    var currentPlayerCell = document.querySelector(".cell.player");
+    if(currentPlayerCell !== null){
+        currentPlayerCell.classList.remove("player");
+}
+
     getCell(playerPos.x, playerPos.y).classList.add("player");
 
-    if(!(getCell(playerPos.x, playerPos.y).classList.contains("conquered"))){
-        
+    if(!getCell(playerPos.x, playerPos.y).classList.contains("conquered")){
+        if (!getCell(lastPos.x, lastPos.y).classList.contains("conquered")){
+            getCell(lastPos.x, lastPos.y).classList.add("trail");
+        }
         trailActive = true;
     }
 
     if(trailActive === true && getCell(playerPos.x, playerPos.y).classList.contains("conquered")){
-        getCell(lastPos.x, lastPos.y).classList.add("trail");
         trailActive = false;
-        //...
+        getCell(lastPos.x, lastPos.y).classList.add("trail");
     }
 
     if(trailActive === true && getCell(playerPos.x, playerPos.y).classList.contains("trail")){
-        respawn(true);
+        respawn();
+    }
+
+    if(getCell(playerPos.x, playerPos.y).classList.contains("obstacle")){
+        respawn();
     }
 }
 
 drawPlayer();
 
-document.addEventListener("keydown", (e) => {
-    const key = e.key.toLowerCase();
+document.addEventListener("keydown", function(e){
+    var key = e.key.toLowerCase();
 
-    if (key === "arrowup" || key === "w"){
-        direction = { x: 0, y: -1 };
+    if(key === "arrowup" || key === "w"){
+        direction = {x: 0, y: -1};
     }
 
-    if (key === "arrowdown" || key === "s"){
-        direction = { x: 0, y: 1 };
+    if(key === "arrowdown" || key === "s"){
+        direction = {x: 0, y: 1};
     }
 
-    if (key === "arrowleft" || key === "a"){
-        direction = { x: -1, y: 0 };
+    if(key === "arrowleft" || key === "a"){
+        direction = {x: -1, y: 0};
     }
 
-    if (key === "arrowright" || key === "d"){
-        direction = { x: 1, y: 0 };
+    if(key === "arrowright" || key === "d"){
+        direction = {x: 1, y: 0};
     }
 
-    if (key === "r"){
+    if(key === "r"){
         reset();
+    }
+
+    if(key === "p"){
+        if(!paused){
+            tickRate = 0;
+            paused = true;
+        }else{
+            tickRate = 50;
+            paused = false;
+        }
     }
 });
 
-setInterval(() => {
+function gameTick(){
+    if(paused) return;
+
     lastPos.x = playerPos.x;
     lastPos.y = playerPos.y;
 
-    const tempX = playerPos.x + direction.x;
-    const tempY = playerPos.y + direction.y;
+    var tempX = playerPos.x + direction.x;
+    var tempY = playerPos.y + direction.y;
 
-    if (tempX >= 0 && tempX < cols && tempY >= 0 && tempY < rows){
+    if(tempX >= 0 && tempX < cols && tempY >= 0 && tempY < rows){
         playerPos.x = tempX;
         playerPos.y = tempY;
         drawPlayer();
     }
-}, 50);
+}
+
+setInterval(gameTick, tickRate);
 
 function reset(){
     livesLeft = 3;
-
-    for (let y = 0; y < rows; y++){
-        for (let x = 0; x < cols; x++) {
-            const cell = document.createElement("div");
-            cell.classList.add("cell");
-            if (!(x < 3 || x >= cols - 3 || y < 3 || y >= rows - 3)){
-                cell.classList.add("conquered");
-            } else {
-                
-            }
-        }
-    }
-    //...
 }
 
-function respawn(gotDamage){
-    if(gotDamage){
-        livesLeft--;
-    }
+function respawn(){
+    trailActive = false;
+    livesLeft--;
 
-    if(livesLeft === 0){
-        reset();
-    }
+    document.getElementById("lives").innerHTML = livesLeft;
 
     playerPos.x = 0;
     playerPos.y = 0;
+    lastPos.x = 0;
+    lastPos.y = 0;
+    direction.x = 1;
+    direction.y = 0;
+
+    if(livesLeft === 0){
+        //reset();
+    }
 }
