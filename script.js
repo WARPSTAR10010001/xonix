@@ -11,7 +11,7 @@ var tickRate = 50;
 var paused = false;
 
 for(var y = 0; y < rows; y++){
-    for(var x = 0; x < cols; x++) {
+    for(var x = 0; x < cols; x++){
         var cell = document.createElement("div");
         cell.classList.add("cell");
         if(x < 3 || x >= cols - 3 || y < 3 || y >= rows - 3){
@@ -31,7 +31,7 @@ function drawPlayer(){
     var currentPlayerCell = document.querySelector(".cell.player");
     if(currentPlayerCell !== null){
         currentPlayerCell.classList.remove("player");
-}
+    }
 
     getCell(playerPos.x, playerPos.y).classList.add("player");
 
@@ -112,14 +112,7 @@ setInterval(gameTick, tickRate);
 
 function reset(){
     livesLeft = 3;
-}
-
-function respawn(){
     trailActive = false;
-    livesLeft--;
-
-    document.getElementById("lives").innerHTML = livesLeft;
-
     playerPos.x = 0;
     playerPos.y = 0;
     lastPos.x = 0;
@@ -127,7 +120,57 @@ function respawn(){
     direction.x = 1;
     direction.y = 0;
 
-    if(livesLeft === 0){
-        //reset();
+    document.getElementById("lives").innerHTML = livesLeft;
+    document.getElementById("time").innerHTML = "00:00";
+
+    var cells = document.getElementsByClassName("cell");
+    for (var i = 0; i < cells.length; i++) {
+        let cell = cells[i];
+        let x = parseInt(cell.getAttribute("pos-x"));
+        let y = parseInt(cell.getAttribute("pos-y"));
+
+        if (!(x < 3 || x >= cols - 3 || y < 3 || y >= rows - 3)) {
+            cell.classList.remove("trail");
+            cell.classList.remove("obstacle");
+            cell.classList.remove("conquered");
+            cell.classList.remove("player");
+        }
     }
+
+    drawPlayer();
+}
+
+function respawn(){
+    trailActive = false;
+    livesLeft--;
+    document.getElementById("lives").innerHTML = livesLeft;
+
+    paused = true;
+
+    setTimeout(() => {
+        playerPos.x = 0;
+        playerPos.y = 0;
+        lastPos.x = 0;
+        lastPos.y = 0;
+        direction.x = 1;
+        direction.y = 0;
+
+        drawPlayer();
+        paused = false;
+
+        var cells = document.getElementsByClassName("cell");
+        for (var i = 0; i < cells.length; i++) {
+            let cell = cells[i];
+            let x = parseInt(cell.getAttribute("pos-x"));
+            let y = parseInt(cell.getAttribute("pos-y"));
+
+            if (!(x < 3 || x >= cols - 3 || y < 3 || y >= rows - 3)) {
+                cell.classList.remove("trail");
+            }
+        }
+
+        if (livesLeft === 0){
+            reset();
+        }
+    }, 1000);
 }
