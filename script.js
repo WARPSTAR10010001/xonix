@@ -6,15 +6,7 @@ let playerX = 0;
 let playerY = 0;
 let direction = { x: 1, y: 0 };
 let trailActive = false;
-
-let field = [];
-
-for (let y = 0; y < rows; y++) {
-    field[y] = [];
-    for (let x = 0; x < cols; x++) {
-        field[y][x] = "empty";
-    }
-}
+let livesLeft = 3;
 
 for (let y = 0; y < rows; y++) {
     for (let x = 0; x < cols; x++) {
@@ -44,8 +36,12 @@ function drawPlayer() {
 
     if(trailActive === true && getCell(playerX, playerY).classList.contains("conquered")){
         trailActive = false;
-
+        //...
     }
+
+    /* if(trailActive === true && getCell(playerX, playerY).classList.contains("trail")){
+        respawn(true);
+    } */
 }
 
 drawPlayer();
@@ -68,6 +64,10 @@ document.addEventListener("keydown", (e) => {
     if (key === "arrowright" || key === "d") {
         direction = { x: 1, y: 0 };
     }
+
+    if (key === "r") {
+        reset();
+    }
 });
 
 setInterval(() => {
@@ -80,3 +80,20 @@ setInterval(() => {
         drawPlayer();
     }
 }, 50);
+
+function reset(){
+    //...
+}
+
+function respawn(gotDamage){
+    if(gotDamage){
+        livesLeft--;
+    }
+
+    if(livesLeft === 0){
+        reset();
+    }
+
+    playerX = 0;
+    playerY = 0;
+}
