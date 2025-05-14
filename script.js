@@ -23,6 +23,8 @@ for(var y = 0; y < rows; y++){
         court.appendChild(cell);
     }
 }
+paused = true;
+showOverlay("Willkommen zu XONIX", "'R' drücken, um Spiel zu starten");
 
 function getCell(x, y){
     return document.querySelector('.cell[pos-x="' + x + '"][pos-y="' + y + '"]');
@@ -188,7 +190,7 @@ function respawn(){
 }
 
 function showOverlay(message, subMessage) {
-    let overlay = document.getElementById("overlay");
+    var overlay = document.getElementById("overlay");
     overlay.classList.remove("hidden");
     overlay.style.display = "flex";
     document.getElementById("overlay-text").innerText = message;
@@ -197,7 +199,7 @@ function showOverlay(message, subMessage) {
 }
 
 function hideOverlay() {
-    let overlay = document.getElementById("overlay");
+    var overlay = document.getElementById("overlay");
     overlay.style.display = "none";
     overlay.classList.add("hidden");
     document.getElementById("court").classList.remove("blurred");
