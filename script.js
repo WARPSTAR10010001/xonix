@@ -23,6 +23,7 @@ for(var y = 0; y < rows; y++){
         court.appendChild(cell);
     }
 }
+
 paused = true;
 showOverlay("Willkommen zu XONIX", "'R' drücken, um Spiel zu starten");
 
