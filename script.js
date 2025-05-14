@@ -93,18 +93,18 @@ document.addEventListener("keydown", function(e){
 });
 
 function gameTick(){
-    if(paused) return;
+    if(!paused){
+        lastPos.x = playerPos.x;
+        lastPos.y = playerPos.y;
 
-    lastPos.x = playerPos.x;
-    lastPos.y = playerPos.y;
+        var tempX = playerPos.x + direction.x;
+        var tempY = playerPos.y + direction.y;
 
-    var tempX = playerPos.x + direction.x;
-    var tempY = playerPos.y + direction.y;
-
-    if(tempX >= 0 && tempX < cols && tempY >= 0 && tempY < rows){
-        playerPos.x = tempX;
-        playerPos.y = tempY;
-        drawPlayer();
+        if(tempX >= 0 && tempX < cols && tempY >= 0 && tempY < rows){
+            playerPos.x = tempX;
+            playerPos.y = tempY;
+            drawPlayer();
+        }
     }
 }
 
