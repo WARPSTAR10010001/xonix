@@ -4,9 +4,10 @@ const court = document.getElementById("court");
 
 let playerX = 0;
 let playerY = 0;
-let direction = { x: 1, y: 0 };
+let direction = {x: 1, y: 0};
 let trailActive = false;
 let livesLeft = 3;
+let lastPos = {x: 0, y: 0};
 
 for (let y = 0; y < rows; y++) {
     for (let x = 0; x < cols; x++) {
