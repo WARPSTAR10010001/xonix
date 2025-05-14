@@ -189,7 +189,7 @@ function respawn(){
     }, 1000);
 }
 
-function showOverlay(message, subMessage) {
+function showOverlay(message, subMessage){
     var overlay = document.getElementById("overlay");
     overlay.classList.remove("hidden");
     overlay.style.display = "flex";
@@ -198,7 +198,7 @@ function showOverlay(message, subMessage) {
     document.getElementById("court").classList.add("blurred");
 }
 
-function hideOverlay() {
+function hideOverlay(){
     var overlay = document.getElementById("overlay");
     overlay.style.display = "none";
     overlay.classList.add("hidden");
