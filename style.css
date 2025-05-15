@@ -52,6 +52,15 @@ body {
     color: #FFC4A8;
 }
 
+a:visited, a:active, a:hover {
+    color: inherit;
+}
+
+hr {
+    border: 2px solid white;
+    margin: -10px;
+}
+
 #stats {
     margin-left: 20px;
     padding: 0 20px;
@@ -64,6 +73,7 @@ body {
 
 .aside-header{
     text-decoration: underline;
+    text-decoration-thickness: 2px;
     color: #FFC4A8;
 }
 
@@ -101,10 +111,6 @@ ul {
     margin: 10px 0;
 }
 
-a:visited, a:active, a:hover {
-    color: inherit;
-}
-
 .cell {
     background-color: #fff;
 }
@@ -127,4 +133,20 @@ a:visited, a:active, a:hover {
 
 .blurred {
     filter: blur(4px);
+}
+
+.pulse {
+    animation: changeColor 1s infinite;
+}
+
+@keyframes changeColor {
+    0% {
+        color: #ffdbca;
+    }
+    80% {
+        color: #ffffff;
+    }
+    100% {
+        color: #ffdbca;
+    }
 }
