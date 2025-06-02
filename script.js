@@ -10,6 +10,7 @@ var trailActive = false;
 var livesLeft = 3;
 var paused = false;
 var completed = 0;
+var grid;
 
 for(var y = 0; y < rows; y++){
     for(var x = 0; x < cols; x++){
@@ -26,45 +27,9 @@ for(var y = 0; y < rows; y++){
 
 paused = true;
 showOverlay("Willkommen zu XONIX", "'R' drücken, um Spiel zu starten");
-
-function getCell(x, y){
-    return document.querySelector('.cell[pos-x="' + x + '"][pos-y="' + y + '"]');
-}
-
-function drawPlayer(){
-    var currentPlayerCell = document.querySelector(".cell.player");
-    if(currentPlayerCell !== null){
-        currentPlayerCell.classList.remove("player");
-    }
-
-    getCell(playerPos.x, playerPos.y).classList.add("player");
-
-    if(completed >= 75){
-        win();
-    }
-
-    if(!getCell(playerPos.x, playerPos.y).classList.contains("conquered")){
-        if (!getCell(lastPos.x, lastPos.y).classList.contains("conquered")){
-            getCell(lastPos.x, lastPos.y).classList.add("trail");
-        }
-        trailActive = true;
-    }
-
-    if(trailActive === true && getCell(playerPos.x, playerPos.y).classList.contains("conquered")){
-        trailActive = false;
-        getCell(lastPos.x, lastPos.y).classList.add("trail");
-    }
-
-    if(trailActive === true && getCell(playerPos.x, playerPos.y).classList.contains("trail")){
-        respawn();
-    }
-
-    if(getCell(playerPos.x, playerPos.y).classList.contains("obstacle")){
-        respawn();
-    }
-}
-
 drawPlayer();
+setInterval(gameTick, 50);
+grid = generateGrid();
 
 document.addEventListener("keydown", function(e){
     var key = e.key.toLowerCase();
@@ -100,6 +65,48 @@ document.addEventListener("keydown", function(e){
     }
 });
 
+function getCell(x, y){
+    return document.querySelector('.cell[pos-x="' + x + '"][pos-y="' + y + '"]');
+}
+
+function drawPlayer(){
+    var currentPlayerCell = document.querySelector(".cell.player");
+    if(currentPlayerCell !== null){
+        currentPlayerCell.classList.remove("player");
+    }
+
+    getCell(playerPos.x, playerPos.y).classList.add("player");
+
+    if(completed >= 75){
+        win();
+    }
+
+    if(!getCell(playerPos.x, playerPos.y).classList.contains("conquered")){
+        if (!getCell(lastPos.x, lastPos.y).classList.contains("conquered")){
+            getCell(lastPos.x, lastPos.y).classList.add("trail");
+        }
+        trailActive = true;
+    }
+
+    if(trailActive === true && getCell(playerPos.x, playerPos.y).classList.contains("conquered")){
+        trailActive = false;
+        var trailedCells = document.querySelectorAll(".cell.trail");
+        for(var i = 0; i < trailedCells.length; i++){
+            trailedCells[i].classList.add("conquered");
+            trailedCells[i].classList.remove("trail");
+        }
+        getCell(lastPos.x, lastPos.y).classList.add("conquered");
+    }
+
+    if(trailActive === true && getCell(playerPos.x, playerPos.y).classList.contains("trail")){
+        respawn();
+    }
+
+    if(getCell(playerPos.x, playerPos.y).classList.contains("obstacle")){
+        respawn();
+    }
+}
+
 function gameTick(){
     if(!paused){
         lastPos.x = playerPos.x;
@@ -112,11 +119,12 @@ function gameTick(){
             playerPos.x = tempX;
             playerPos.y = tempY;
             drawPlayer();
+
+            var grid = generateGrid();
+            floodFillArea(grid);
         }
     }
 }
-
-setInterval(gameTick, 50);
 
 function reset(){
     hideOverlay();
@@ -204,4 +212,69 @@ function hideOverlay(){
     overlay.style.display = "none";
     overlay.classList.add("hidden");
     document.getElementById("court").classList.remove("blurred");
+}
+
+function generateGrid(){
+    const grid = [];
+
+    for(let y = 0; y < rows; y++){
+        const row = [];
+
+        for(let x = 0; x < cols; x++){
+            const cell = getCell(x, y);
+
+            if(cell.classList.contains("conquered")){
+                row.push("conquered");
+            } else if(cell.classList.contains("trail")){
+                row.push("trail");
+            } else if(cell.classList.contains("obstacle")){
+                row.push("obstacle");
+            } else if(cell.classList.contains("player")){
+                row.push("player");
+            } else {
+                row.push("empty");
+            }
+        }
+
+        grid.push(row);
+    }
+
+    return grid;
+}
+
+function floodFillArea(grid){
+    var visited = [];
+    for(var y = 0; y < rows; y++){
+        visited[y] = [];
+        for(var x = 0; x < cols; x++){
+            visited[y][x] = false;
+        }
+    }
+
+    var queue = [[3, 3]];
+    while(queue.length > 0){
+        var pos = queue.shift();
+        var x = pos[0];
+        var y = pos[1];
+        if(x < 0 || x >= cols || y < 0 || y >= rows) continue;
+        if(visited[y][x]) continue;
+        if(grid[y][x] === "conquered" || grid[y][x] === "trail" || grid[y][x] === "obstacle") continue;
+
+        visited[y][x] = true;
+
+        queue.push([x + 1, y]);
+        queue.push([x - 1, y]);
+        queue.push([x, y + 1]);
+        queue.push([x, y - 1]);
+    }
+
+    for(var y = 0; y < rows; y++){
+        for(var x = 0; x < cols; x++){
+            if(!visited[y][x] && grid[y][x] === "empty"){
+                var cell = getCell(x,y);
+                cell.classList.add("conquered");
+                cell.classList.remove("trail");
+            }
+        }
+    }
 }
